@@ -12,4 +12,4 @@ class ConsoleRunner:
                 break
             except Exception:
                 continue
-        print('\ngoodbye!')
+        print('\033[34m\ngoodbye!\033[0m')

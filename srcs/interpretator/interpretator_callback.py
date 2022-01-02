@@ -1,3 +1,6 @@
+from srcs.errors import InternalError
+
+
 class InterpretatorCallback:
     def __init__(self, function, filter):
         self.function = function
@@ -7,8 +10,10 @@ class InterpretatorCallback:
         if self.allowed(string):
             try:
                 return self.function(string, string_number, context)
+            except InternalError as e:
+                return f'\033[31mERROR: {str(e)}\033[0m'
             except Exception as e:
-                return f'oops! internal error ({e})'
+                return f'\033[31moops! internal error ({e})\033[0m'
 
     def allowed(self, string):
         try:
