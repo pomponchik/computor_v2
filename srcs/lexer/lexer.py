@@ -18,7 +18,34 @@ class Lexer:
             for lexeme in lexemes:
                 all_lexemes.append(lexeme)
 
+        all_lexemes = self.post_processing(all_lexemes)
+
         return all_lexemes
+
+    def post_processing(self, all_lexemes):
+        result = []
+        index = 0
+
+        while index < len(all_lexemes):
+            current_lexeme = all_lexemes[index]
+            if current_lexeme.source == '-':
+                if index != (len(all_lexemes) - 1):
+                    next_lexeme = all_lexemes[index + 1]
+                    if isinstance(next_lexeme, NumberLexeme) and not next_lexeme.previous_is_space:
+                        new_lexeme = NumberLexeme(current_lexeme.source + next_lexeme.source, current_lexeme.source_index, current_lexeme.string, current_lexeme.string_index)
+                        result.append(new_lexeme)
+                        index += 2
+                    else:
+                        result.append(current_lexeme)
+                        index += 1
+                else:
+                    result.append(current_lexeme)
+                    index += 1
+            else:
+                result.append(current_lexeme)
+                index += 1
+
+        return result
 
     def get_lexemes_from_substring(self, substring, index):
         result = []
