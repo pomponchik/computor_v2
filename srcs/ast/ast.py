@@ -21,8 +21,7 @@ from srcs.errors import InternalSyntaxError
 class AbstractSyntaxTree:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.nodes = self.create_anonymous_nodes(tokens)
-        self.build_ast(self.nodes)
+        self.nodes = self.build_ast(tokens)
 
     def __repr__(self):
         return f'{type(self).__name__}({self.nodes})'
@@ -31,7 +30,7 @@ class AbstractSyntaxTree:
         stack = []
         index = 0
 
-        pass
+        nodes = self.create_anonymous_nodes(tokens)
 
     def create_anonymous_nodes(self, tokens):
         stack = []
@@ -40,6 +39,7 @@ class AbstractSyntaxTree:
             if isinstance(token, CloseBracketToken):
                 buffer = []
                 flag = False
+                temp_token = token
                 while stack:
                     temp_token = stack.pop()
                     if isinstance(temp_token, OpenBracketToken):
@@ -48,7 +48,7 @@ class AbstractSyntaxTree:
                     else:
                         buffer.append(temp_token)
                 if not flag:
-                    raise InternalSyntaxError('extra closing parenthesis', token)
+                    raise InternalSyntaxError('extra closing parenthesis', temp_token)
                 buffer.reverse()
                 buffer = self.create_anonymous_nodes(buffer)
                 node = AnonymousNode(buffer)
@@ -62,7 +62,6 @@ class AbstractSyntaxTree:
             if isinstance(token, OpenBracketToken):
                 open_index = index
         if open_index is not None:
-            print(stack[open_index].lexemes)
             raise InternalSyntaxError('extra opening parenthesis', stack[open_index])
 
         return stack
