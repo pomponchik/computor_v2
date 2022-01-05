@@ -9,9 +9,10 @@ class InterpretatorCallback:
     def __call__(self, string, string_number, context):
         if self.allowed(string):
             try:
-                return self.function(string, string_number, context)
+                result = self.function(string, string_number, context)
+                return None if result is None else f'\033[97m{result}\033[0m'
             except InternalError as e:
-                return f'\033[31mERROR: {str(e)}\033[0m'
+                return f'\033[31m{str(e)}\033[0m'
             except Exception as e:
                 return f'\033[31moops! internal error ({e})\033[0m'
 

@@ -10,6 +10,7 @@ class Lexer:
 
     def get_lexemes(self):
         substrings = self.get_splitted_substrings()
+        #print(substrings)
 
         all_lexemes = []
 
@@ -55,13 +56,19 @@ class Lexer:
         others = []
 
         previous_letter = ''
-        last_index = 0
+        last_index = index
+
+        flag = False
+
+        is_character = lambda x: x.isalpha()
+        is_number = lambda x: x.isdigit()
+        is_other = lambda x: not is_character(x) and not is_number(x)
 
         for increment, letter in enumerate(substring):
             letter_index = index + increment
 
-            if letter.isalpha():
-                if not previous_letter.isalpha():
+            if is_character(letter):
+                if not is_character(previous_letter):
                     if numbers:
                         result.append(NumberLexeme(''.join(numbers), last_index, self.string, self.string_number))
                         numbers = []
@@ -70,9 +77,10 @@ class Lexer:
                             result.append(OtherLexeme(other, last_index + other_index, self.string, self.string_number))
                         others = []
                     last_index = letter_index
+                    flag = True
                 characters.append(letter)
-            elif letter.isdigit():
-                if not previous_letter.isdigit():
+            elif is_number(letter):
+                if not is_number(previous_letter):
                     if characters:
                         result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
                         characters = []
@@ -81,9 +89,10 @@ class Lexer:
                             result.append(OtherLexeme(other, last_index + other_index, self.string, self.string_number))
                         others = []
                     last_index = letter_index
+                    flag = True
                 numbers.append(letter)
             else:
-                if not ((not previous_letter.isdigit()) and (not previous_letter.isalpha())):
+                if not is_other(previous_letter):
                     if numbers:
                         result.append(NumberLexeme(''.join(numbers), last_index, self.string, self.string_number))
                         numbers = []
@@ -91,17 +100,19 @@ class Lexer:
                         result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
                         characters = []
                     last_index = letter_index
+                    flag = True
                 others.append(letter)
 
             previous_letter = letter
 
+        #print(characters, numbers, others)
         if characters:
             result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
         elif numbers:
             result.append(NumberLexeme(''.join(numbers), last_index, self.string, self.string_number))
         else:
             for other_index, other in enumerate(others):
-                result.append(OtherLexeme(other, last_index + other_index, self.string, self.string_number))
+                result.append(OtherLexeme(other, last_index + other_index + 0 if flag else index, self.string, self.string_number))
 
         return result
 

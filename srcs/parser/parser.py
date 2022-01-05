@@ -14,8 +14,10 @@ from srcs.parser.tokens.function_definition_token import FunctionDefinitionToken
 from srcs.parser.tokens.function_call_token import FunctionCallToken
 from srcs.parser.tokens.question_token import QuestionToken
 from srcs.parser.tokens.equal_token import EqualToken
+from srcs.parser.tokens.semicolon_token import SemicolonToken
+from srcs.parser.tokens.comma_token import CommaToken
 
-from srcs.errors import InternalError
+from srcs.errors import InternalLexicalError
 
 from srcs.matcher.matcher import PatternMatcher
 
@@ -35,6 +37,8 @@ class Parser:
                 'o[%]': BinaryOperatorToken,
                 'o[(]': OpenBracketToken,
                 'o[)]': CloseBracketToken,
+                'o[;]': SemicolonToken,
+                'o[,]': CommaToken,
                 'n': RationalNumberToken,
                 'no[.]n': RationalNumberToken,
                 'nc[i]': ComplexNumberToken,
@@ -55,10 +59,10 @@ class Parser:
             pattern = self.matcher.match(self.lexemes, index)
 
             if pattern is None:
-                raise InternalError('incorrect syntax')
+                raise InternalLexicalError('unrecognized set of lexemes', self.lexemes[index])
 
             token_class = pattern.result_value
-            token = token_class(self.lexemes[index:index + len(pattern)])
+            token = token_class(self.lexemes[index:index + len(pattern)], pattern.string)
             tokens.append(token)
 
             index += len(pattern)

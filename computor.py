@@ -14,9 +14,11 @@ def main():
     @interpretator()
     def responder(string, string_number, context):
         lexemes = Lexer(string, string_number).get_lexemes()
+        print(lexemes)
         tokens = Parser(lexemes).tokenize()
         print(tokens)
         ast = AbstractSyntaxTree(tokens)
+        print(ast)
         semantic_graph = AbstractSemanticGraph(ast)
         output = Executor(semantic_graph, context).execute()
         return output
