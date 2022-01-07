@@ -10,7 +10,6 @@ class Lexer:
 
     def get_lexemes(self):
         substrings = self.get_splitted_substrings()
-        #print(substrings)
 
         all_lexemes = []
 
@@ -92,20 +91,22 @@ class Lexer:
                     flag = True
                 numbers.append(letter)
             else:
-                if not is_other(previous_letter):
-                    if numbers:
-                        result.append(NumberLexeme(''.join(numbers), last_index, self.string, self.string_number))
-                        numbers = []
-                    elif characters:
-                        result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
-                        characters = []
-                    last_index = letter_index
-                    flag = True
+                if numbers:
+                    result.append(NumberLexeme(''.join(numbers), last_index, self.string, self.string_number))
+                    numbers = []
+                elif characters:
+                    result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
+                    characters = []
+                elif others:
+                    for other_index, other in enumerate(others):
+                        result.append(OtherLexeme(other, last_index + other_index, self.string, self.string_number))
+                    others = []
+                last_index = letter_index
+                flag = True
                 others.append(letter)
 
             previous_letter = letter
 
-        #print(characters, numbers, others)
         if characters:
             result.append(CharactersLexeme(''.join(characters), last_index, self.string, self.string_number))
         elif numbers:

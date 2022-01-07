@@ -1,5 +1,5 @@
-from srcs.ast.nodes.abstract_node import AbstractNode
+from srcs.ast.nodes.branches.abstract_branche_node import AbstractBrancheNode
 
 
-class BinaryOperationNode(AbstractNode):
-    pass
+class BinaryOperationNode(AbstractBrancheNode):
+    name = '1'

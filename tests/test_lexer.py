@@ -27,3 +27,13 @@ def test_create_lexemes_2():
 
     assert lexemes_labels == list('ooco')
     assert lexemes_numbers == [0, 2, 3, 6]
+
+def test_create_lexemes_3():
+    string = '())'
+
+    lexemes = Lexer(string, 1).get_lexemes()
+    lexemes_labels = [x.name for x in lexemes]
+    lexemes_numbers = [x.source_index for x in lexemes]
+
+    assert lexemes_labels == list('ooo')
+    assert lexemes_numbers == [0, 1, 2]

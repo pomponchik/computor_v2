@@ -1,5 +1,5 @@
 from srcs.ast.nodes.abstract_node import AbstractNode
 
 
-class AnonymousNode(AbstractNode):
-    pass
+class AbstractLeaveNode(AbstractNode):
+    name = None

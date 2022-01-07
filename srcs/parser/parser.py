@@ -7,15 +7,15 @@ from srcs.parser.tokens.binary_operator_token import BinaryOperatorToken
 from srcs.parser.tokens.rational_number_token import RationalNumberToken
 from srcs.parser.tokens.complex_number_token import ComplexNumberToken
 from srcs.parser.tokens.name_token import NameToken
-from srcs.parser.tokens.name_definition_token import NameDefinitionToken
 from srcs.parser.tokens.open_bracket_token import OpenBracketToken
 from srcs.parser.tokens.close_bracket_token import CloseBracketToken
 from srcs.parser.tokens.function_definition_token import FunctionDefinitionToken
-from srcs.parser.tokens.function_call_token import FunctionCallToken
 from srcs.parser.tokens.question_token import QuestionToken
 from srcs.parser.tokens.equal_token import EqualToken
 from srcs.parser.tokens.semicolon_token import SemicolonToken
 from srcs.parser.tokens.comma_token import CommaToken
+from srcs.parser.tokens.square_open_bracket_token import SquareOpenBracketToken
+from srcs.parser.tokens.square_close_bracket_token import SquareCloseBracketToken
 
 from srcs.errors import InternalLexicalError
 
@@ -28,24 +28,32 @@ class Parser:
         self.matcher = PatternMatcher(
             {
                 'c': NameToken,
-                'co[=]': NameDefinitionToken,
                 'o[+]': BinaryOperatorToken,
                 'o[-]': BinaryOperatorToken,
                 'o[*]': BinaryOperatorToken,
+                'o[*]o[*]': BinaryOperatorToken,
                 'o[/]': BinaryOperatorToken,
                 'o[^]': BinaryOperatorToken,
                 'o[%]': BinaryOperatorToken,
                 'o[(]': OpenBracketToken,
                 'o[)]': CloseBracketToken,
+                'o[(]': OpenBracketToken,
                 'o[;]': SemicolonToken,
                 'o[,]': CommaToken,
+                'o[=]': EqualToken,
                 'n': RationalNumberToken,
                 'no[.]n': RationalNumberToken,
-                'nc[i]': ComplexNumberToken,
-                'no[.]nc[i]': ComplexNumberToken,
+                'no[*]c[i]o[+]n': ComplexNumberToken,
+                'no[*]c[i]o[-]n': ComplexNumberToken,
+                'nc[i]o[+]n': ComplexNumberToken,
+                'nc[i]o[-]n': ComplexNumberToken,
+                'no[+]no[*]c[i]': ComplexNumberToken,
+                'no[-]no[*]c[i]': ComplexNumberToken,
+                'no[+]nc[i]': ComplexNumberToken,
+                'no[-]nc[i]': ComplexNumberToken,
                 'co[(]co[)]o[=]': FunctionDefinitionToken,
-                'co[(]co[)]': FunctionCallToken,
                 'o[=]o[?]': QuestionToken,
+                'o[?]': QuestionToken,
             },
             lambda x: x.name,
             lambda x: x.source,
@@ -56,15 +64,25 @@ class Parser:
         index = 0
 
         while index < len(self.lexemes):
-            pattern = self.matcher.match(self.lexemes, index)
+            lexeme = self.lexemes[index]
+            if lexeme.source == '[' or lexeme.source == ']':
+                if lexeme.source == '[':
+                    token = SquareOpenBracketToken([lexeme], '')
+                    tokens.append(token)
+                else:
+                    token = SquareCloseBracketToken([lexeme], '')
+                    tokens.append(token)
+                index += 1
+            else:
+                pattern = self.matcher.match(self.lexemes, index)
 
-            if pattern is None:
-                raise InternalLexicalError('unrecognized set of lexemes', self.lexemes[index])
+                if pattern is None:
+                    raise InternalLexicalError('unrecognized set of lexemes', self.lexemes[index])
 
-            token_class = pattern.result_value
-            token = token_class(self.lexemes[index:index + len(pattern)], pattern.string)
-            tokens.append(token)
+                token_class = pattern.result_value
+                token = token_class(self.lexemes[index:index + len(pattern)], pattern.string)
+                tokens.append(token)
 
-            index += len(pattern)
+                index += len(pattern)
 
         return tokens

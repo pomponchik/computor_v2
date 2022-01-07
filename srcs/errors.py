@@ -26,7 +26,8 @@ class InternalSyntaxError(InternalError):
         self.token = token
 
     def __str__(self):
-        return f'Syntax Error: {self.message} ("{self.token_representation()}").'
+        text = f'Syntax Error: {self.message} ("{self.token_representation()}").'
+        return text
 
     def token_representation(self):
         begin = self.token.string[0:self.token.string_begin_index]
@@ -34,3 +35,24 @@ class InternalSyntaxError(InternalError):
         end = self.token.string[self.token.string_end_index:]
 
         return f'{begin}\033[4m{inner_part}\033[0m\033[31m{end}'
+
+class ASTError(InternalSyntaxError):
+    def token_representation(self):
+        left_token = self.get_left_token(self.token)
+        right_token = self.get_right_token(self.token)
+
+        begin = left_token.string[0:left_token.string_begin_index]
+        inner_part = left_token.string[left_token.string_begin_index:right_token.string_end_index]
+        end = self.token.string[right_token.string_end_index:]
+
+        return f'{begin}\033[4m{inner_part}\033[0m\033[31m{end}'
+
+    def get_left_token(self, node):
+        if hasattr(node, 'tokens'):
+            return self.get_left_token(node.tokens[0])
+        return node
+
+    def get_right_token(self, node):
+        if hasattr(node, 'tokens'):
+            return self.get_right_token(node.tokens[-1])
+        return node

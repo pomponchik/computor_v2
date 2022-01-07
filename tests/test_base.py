@@ -8,7 +8,7 @@ from srcs.executor.executor import Executor
 
 
 def test_base():
-    string = 'kek)'
+    string = '(kek)'
     string_number = 5
     context = {}
 

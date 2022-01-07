@@ -1,5 +1,5 @@
 from srcs.parser.tokens.abstract_token import AbstractToken
 
 
-class NameDefinitionToken(AbstractToken):
+class SquareCloseBracketToken(AbstractToken):
     pass
