@@ -3,7 +3,7 @@ from srcs.interpretator.console_runner import ConsoleRunner
 from srcs.lexer.lexer import Lexer
 from srcs.parser.parser import Parser
 from srcs.ast.ast import AbstractSyntaxTree
-from srcs.asg.asg import AbstractSemanticGraph
+from srcs.sg.sg import SemanticGraph
 from srcs.executor.executor import Executor
 
 
@@ -14,12 +14,11 @@ def main():
     @interpretator()
     def responder(string, string_number, context):
         lexemes = Lexer(string, string_number).get_lexemes()
-        print(lexemes)
         tokens = Parser(lexemes).tokenize()
-        print(tokens)
         ast = AbstractSyntaxTree(tokens)
         print(ast)
-        semantic_graph = AbstractSemanticGraph(ast)
+        semantic_graph = SemanticGraph(ast)
+        print(semantic_graph)
         output = Executor(semantic_graph, context).execute()
         return output
 

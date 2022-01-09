@@ -37,6 +37,12 @@ class InternalSyntaxError(InternalError):
         return f'{begin}\033[4m{inner_part}\033[0m\033[31m{end}'
 
 class ASTError(InternalSyntaxError):
+    def __str__(self):
+        if self.get_left_token(self.token) is not None:
+            text = f'Syntax Error: {self.message} ("{self.token_representation()}").'
+            return text
+        return f'Syntax Error: empty brackets or other empty expression.'
+
     def token_representation(self):
         left_token = self.get_left_token(self.token)
         right_token = self.get_right_token(self.token)
@@ -49,10 +55,16 @@ class ASTError(InternalSyntaxError):
 
     def get_left_token(self, node):
         if hasattr(node, 'tokens'):
-            return self.get_left_token(node.tokens[0])
+            if node.tokens:
+                return self.get_left_token(node.tokens[0])
+            else:
+                return None
         return node
 
     def get_right_token(self, node):
         if hasattr(node, 'tokens'):
-            return self.get_right_token(node.tokens[-1])
+            if node.tokens:
+                return self.get_right_token(node.tokens[-1])
+            else:
+                return None
         return node

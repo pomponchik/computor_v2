@@ -1,4 +1,6 @@
 class AbstractToken:
+    name = 'token'
+    
     def __init__(self, lexemes, form):
         self.lexemes = lexemes
         self.form = form
