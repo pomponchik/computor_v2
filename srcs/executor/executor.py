@@ -4,4 +4,4 @@ class Executor:
         self.context = context
 
     def execute(self):
-        return 'OH SHI...'
+        return self.sg.root.calculate(self.context)

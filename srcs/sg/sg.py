@@ -1,15 +1,6 @@
-from srcs.ast.nodes.branches.binary_operation_node import BinaryOperationNode as ASTBinaryOperationNode
-from srcs.ast.nodes.branches.bracked_node import BrackedNode as ASTBrackedNode
-from srcs.ast.nodes.branches.vector_node import VectorNode as ASTVectorNode
-from srcs.ast.nodes.branches.question_node import QuestionNode as ASTQuestionNode
-
-from srcs.ast.nodes.leaves.complex_number_node import ComplexNumberNode as ASTComplexNumberNode
-from srcs.ast.nodes.leaves.name_node import NameNode as ASTNameNode
-from srcs.ast.nodes.leaves.rational_number_node import RationalNumberNode as ASTRationalNumberNode
+from srcs.sg.create_node import create_node
 
 from srcs.errors import ASTError, InternalError
-
-from srcs.matcher.matcher import PatternMatcher
 
 
 class SemanticGraph:
@@ -35,14 +26,24 @@ class SemanticGraph:
         ComplexNumberNode - 5.
         NameNode - 6.
         RationalNumberNode - 7.
+        FunctionCallNode - 8.
+
+        ?
+        > a + 2 = ?
+        14
+        > funA(2) + funB(4) = ?
+        41
+        > funC(3) = ?
+        15
+        > funA(x) = y ?
+        x^2 + 2x + 1 = 0
+        Une solution sur R :
+        -1
+        #> funA(funB(x)) = ?
+        #4x^2 + 2 * x + 1
         """
         if len(ast.nodes) > 1:
-            print('TOKENS:', ast.nodes)
             raise InternalError('the expression is ambiguous')
         elif len(ast.nodes) == 0:
             raise InternalError('empty expression')
-        return self.create_nodes_dfs(ast.nodes[0], None)
-
-    def create_nodes_dfs(self, node, parent_node):
-        if isinstance(parent_node, ASTQuestionNode):
-            pass
+        return create_node(ast.nodes[0], None)

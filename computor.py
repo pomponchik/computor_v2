@@ -19,8 +19,8 @@ def main():
         print(ast)
         semantic_graph = SemanticGraph(ast)
         print(semantic_graph)
-        output = Executor(semantic_graph, context).execute()
-        return output
+        final_object = Executor(semantic_graph, context).execute()
+        return final_object.representation()
 
     interpretator.run()
 

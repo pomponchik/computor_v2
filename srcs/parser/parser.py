@@ -51,7 +51,7 @@ class Parser:
                 'no[-]no[*]c[i]': ComplexNumberToken,
                 'no[+]nc[i]': ComplexNumberToken,
                 'no[-]nc[i]': ComplexNumberToken,
-                'co[(]co[)]o[=]': FunctionDefinitionToken,
+                #'co[(]co[)]o[=]': FunctionDefinitionToken,
                 'o[=]o[?]': QuestionToken,
                 'o[?]': QuestionToken,
             },

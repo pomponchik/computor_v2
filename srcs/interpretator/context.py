@@ -7,3 +7,6 @@ class Context:
 
     def __setitem__(self, key, value):
         self.data[key] = value
+
+    def get(self, key, default):
+        return self.data.get(key, default)

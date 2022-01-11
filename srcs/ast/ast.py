@@ -46,9 +46,12 @@ class AbstractSyntaxTree:
         nodes = self.create_bracked_nodes(nodes, SquareOpenBracketToken, SquareCloseBracketToken, VectorNode)
         nodes = self.create_binary_operators_nodes(nodes, ['^', '*', '**', '/', '%', '+', '-'])
         nodes = self.create_question_node(nodes)
-        nodes = self.create_binary_operators_nodes(nodes, ['='])
+
         nodes = self.create_implicit_multiple_operators_nodes(nodes)
+        print('before',nodes)
         nodes = self.merge_functions_nodes(nodes)
+        nodes = self.create_binary_operators_nodes(nodes, ['='])
+        print('after',nodes)
         nodes = self.kill_bracked_nodes(nodes)
         self.check_double_questions(nodes)
         return nodes
