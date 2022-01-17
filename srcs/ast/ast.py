@@ -30,6 +30,7 @@ from srcs.errors import InternalSyntaxError
 from srcs.errors import ASTError
 
 from srcs.lexer.lexemes.other_lexeme import OtherLexeme
+from srcs.lexer.lexemes.number_lexeme import NumberLexeme
 
 
 class AbstractSyntaxTree:
@@ -42,19 +43,47 @@ class AbstractSyntaxTree:
 
     def build_ast(self, tokens):
         nodes = self.create_leaves_nodes(tokens)
+        nodes = self.create_implicit_multiple_operators_nodes(nodes)
         nodes = self.create_bracked_nodes(nodes, OpenBracketToken, CloseBracketToken, BrackedNode)
         nodes = self.create_bracked_nodes(nodes, SquareOpenBracketToken, SquareCloseBracketToken, VectorNode)
-        nodes = self.create_binary_operators_nodes(nodes, ['^', '*', '**', '/', '%', '+', '-'])
-        nodes = self.create_question_node(nodes)
-
-        nodes = self.create_implicit_multiple_operators_nodes(nodes)
-        print('before',nodes)
         nodes = self.merge_functions_nodes(nodes)
+        nodes = self.create_binary_operators_nodes(nodes, ['^', '*', '**', '/', '%', '-', '+'])
+        nodes = self.create_question_node(nodes)
         nodes = self.create_binary_operators_nodes(nodes, ['='])
-        print('after',nodes)
         nodes = self.kill_bracked_nodes(nodes)
+        nodes = self.kill_minuses(nodes)
         self.check_double_questions(nodes)
         return nodes
+
+    def kill_minuses(self, nodes):
+        if len(nodes) == 1 and not isinstance(nodes[0], AbstractBrancheNode):
+            return nodes
+
+        result = []
+
+        for node in nodes:
+            if isinstance(node, BinaryOperationNode) and node.tokens[1].source == '-':
+                node = BinaryOperationNode([node.tokens[0], BinaryOperatorToken([OtherLexeme('+', 0, '+', 0)], 'o[+]'), self.set_minus_one(node.tokens[2])])
+            result.append(node)
+
+        for node in result:
+            if isinstance(node, AbstractBrancheNode):
+                node.tokens = self.kill_minuses(node.tokens)
+
+        return result
+
+    def set_minus_one(self, node):
+        if isinstance(node, BinaryOperationNode) and node.tokens[1].source == '+':
+            node.tokens = [self.set_minus_one(node.tokens[0]), node.tokens[1], self.set_minus_one(node.tokens[2])]
+            return node
+        elif isinstance(node, BinaryOperationNode) and node.tokens[1].source == '-':
+            node.tokens = [node.tokens[2], node.tokens[1], node.tokens[0]]
+            return node
+        elif isinstance(node, BinaryOperationNode) and node.tokens[1].source == '*':
+            node.tokens = [self.set_minus_one(node.tokens[0]), node.tokens[1], node.tokens[2]]
+            return node
+        node = BinaryOperationNode([RationalNumberNode([RationalNumberToken([NumberLexeme('-1', 0, '-1', 0)], 'n')]), BinaryOperatorToken([OtherLexeme('*', 0, '*', 0)], 'o[*]'), node])
+        return node
 
     def merge_functions_nodes(self, nodes):
         if not nodes or len(nodes) == 1:
@@ -99,29 +128,22 @@ class AbstractSyntaxTree:
     def create_implicit_multiple_operators_nodes(self, nodes):
         if len(nodes) == 1:
             return nodes
+
         result = []
         index = 0
-        flag = False
+
         while index < (len(nodes) - 1):
-            flag = False
             node = nodes[index]
             next_node = nodes[index + 1]
 
+            result.append(node)
             if isinstance(node, RationalNumberNode) and isinstance(next_node, NameNode):
-                result.append(BinaryOperationNode([node, BinaryOperatorToken([OtherLexeme('*', 0, '*', 0)], 'o[*]'), next_node]))
-                flag = True
-                index += 1
-            else:
-                result.append(node)
+                result.append(BinaryOperatorToken([OtherLexeme('*', 0, '*', 0)], 'o[*]'))
 
             index += 1
 
-        if not flag:
+        if len(nodes):
             result.append(nodes[-1])
-
-        for node in nodes:
-            if isinstance(node, AbstractNode):
-                node.tokens = self.create_implicit_multiple_operators_nodes(node.tokens)
 
         return result
 

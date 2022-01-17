@@ -1,5 +1,7 @@
 from srcs.sg.objects.abstract_object import AbstractObject
 
+from srcs.errors import RuntimeASTError
+
 
 class MatrixObject(AbstractObject):
     type_mark = 'm'

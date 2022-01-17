@@ -16,7 +16,7 @@ def main():
         lexemes = Lexer(string, string_number).get_lexemes()
         tokens = Parser(lexemes).tokenize()
         ast = AbstractSyntaxTree(tokens)
-        print(ast)
+        print('AST', ast)
         semantic_graph = SemanticGraph(ast)
         print(semantic_graph)
         final_object = Executor(semantic_graph, context).execute()

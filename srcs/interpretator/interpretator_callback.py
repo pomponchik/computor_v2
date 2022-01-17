@@ -14,6 +14,9 @@ class InterpretatorCallback:
             except InternalError as e:
                 return f'\033[31m{str(e)}\033[0m'
             except Exception as e:
+                #print(type(e))
+                #import traceback
+                #print(traceback.format_exc())
                 return f'\033[31moops! internal error ({e})\033[0m'
 
     def allowed(self, string):
