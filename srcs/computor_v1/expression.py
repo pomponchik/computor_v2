@@ -43,7 +43,7 @@ class Expression:
         if self.degree == 0:
             if self[0].number.content != 0:
                 error(f'The equation is made incorrectly, it follows that "{self[0].number.content} = 0". I can' + "'" + 't solve.')
-            return '[-∞:+∞]'
+            return ('[-∞:+∞]', )
         elif self.degree == 1:
             return self.solve_power_one()
         discriminant = self.discriminant()
@@ -64,16 +64,16 @@ class Expression:
     def solve_power_one(self):
         number = self[0].number.content
         if not number:
-            return 'The solution is:\n0'
+            return ('0',)
         number *= -1
         mult = self[1].number.content
         if mult > 0:
             result = self.round(number / mult)
-            return f'The solution is:\n{result}'
+            return (str(result), )
         elif mult < 0:
             result = self.round((1 / mult) * number)
-            return f'The solution is:\n{result}'
-        return 'There is an error in the equation (the result of multiplication by 0 is not equal to 0), it is impossible to calculate.'
+            return (str(result),)
+        error('There is an error in the equation (the result of multiplication by 0 is not equal to 0), it is impossible to calculate.')
 
     def discriminant(self):
         result = self['b'] * self['b'] - 4 * self['a'] * self['c']

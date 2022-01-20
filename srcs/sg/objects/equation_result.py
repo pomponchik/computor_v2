@@ -61,7 +61,7 @@ class EquationResultObject(AbstractObject):
         solves = expression.solve()
         if len(solves) == 1:
             return f'{redused}\nUne solution sur R:\n{solves[0]}'
-        return f'redused\nDeux solutions sur R:\n{solves[0]}\n{solves[1]}'
+        return f'{redused}\nDeux solutions sur R:\n{solves[0]}\n{solves[1]}'
 
 
     def type_representation(self):
