@@ -63,7 +63,6 @@ class EquationResultObject(AbstractObject):
             return f'{redused}\nUne solution sur R:\n{solves[0]}'
         return f'{redused}\nDeux solutions sur R:\n{solves[0]}\n{solves[1]}'
 
-
     def type_representation(self):
         return 'equation result'
 
