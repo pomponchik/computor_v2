@@ -27,7 +27,6 @@ class Parser:
         self.lexemes = lexemes
         self.matcher = PatternMatcher(
             {
-                'c': NameToken,
                 'o[+]': BinaryOperatorToken,
                 'o[-]': BinaryOperatorToken,
                 'o[*]': BinaryOperatorToken,
@@ -51,9 +50,12 @@ class Parser:
                 'no[-]no[*]c[i]': ComplexNumberToken,
                 'no[+]nc[i]': ComplexNumberToken,
                 'no[-]nc[i]': ComplexNumberToken,
-                #'co[(]co[)]o[=]': FunctionDefinitionToken,
+                'nc[i]': ComplexNumberToken,
+                'no[*]c[i]': ComplexNumberToken,
+                'c[i]': ComplexNumberToken,
                 'o[=]o[?]': QuestionToken,
                 'o[?]': QuestionToken,
+                'c': NameToken,
             },
             lambda x: x.name,
             lambda x: x.source,

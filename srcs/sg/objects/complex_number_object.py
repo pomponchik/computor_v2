@@ -1,5 +1,7 @@
 from srcs.sg.objects.abstract_object import AbstractObject
 
+from srcs.sg.objects.rational_number_object import RationalNumberObject
+
 from srcs.errors import RuntimeASTError
 
 
@@ -15,6 +17,12 @@ class ComplexNumberObject(AbstractObject):
     def create_from_node(cls, node):
         source = node.ast_node.tokens[0].source.replace(' ', '').replace('\t', '')
 
+        if source == 'i':
+            source = '0+1' + source
+
+        if '-' not in source and '+' not in source:
+            source = '0+' + source
+
         real_part, imaginary_part, imaginary_multiplier = cls.split_source(source)
         imaginary_part = imaginary_part.replace('*', '').replace('i', '').strip()
 
@@ -23,6 +31,12 @@ class ComplexNumberObject(AbstractObject):
 
         imaginary_number *= imaginary_multiplier
 
+        return cls.create(real_number, imaginary_number, node)
+
+    @classmethod
+    def create(cls, real_number, imaginary_number, node):
+        if not imaginary_number:
+            return RationalNumberObject(real_number, node)
         return cls(node, real_number, imaginary_number)
 
     @staticmethod
@@ -34,7 +48,9 @@ class ComplexNumberObject(AbstractObject):
         return splitted[index_real], splitted[index_imaginary], -1 if is_minus else 1
 
     def representation(self):
-        return f'{self.real_part} + {self.imaginary_part}i'
+        if self.real_part:
+            return f'{self.real_part} + {self.imaginary_part}i'
+        return f'{self.imaginary_part}i'
 
     def type_representation(self):
         return 'complex number'
@@ -44,15 +60,15 @@ class ComplexNumberObject(AbstractObject):
             if operation == '+':
                 new_real_part = self.real_part + other.real_part
                 new_imaginary_part = self.imaginary_part + other.imaginary_part
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '-':
                 new_real_part = self.real_part - other.real_part
                 new_imaginary_part = self.imaginary_part - other.imaginary_part
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '*':
                 new_real_part = self.real_part * other.real_part - self.imaginary_part * other.imaginary_part
                 new_imaginary_part = self.real_part * other.imaginary_part + self.imaginary_part * other.real_part
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '/':
                 try:
                     x1 = self.real_part
@@ -63,14 +79,14 @@ class ComplexNumberObject(AbstractObject):
                     new_real_part = (x1 * x2 + y1 * y2) / (x2 ** 2 + y2 ** 2)
                     new_imaginary_part = (y1 * x2 - x1 * y2) / (x2 ** 2 + y2 ** 2)
 
-                    return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                    return self.create(new_real_part, new_imaginary_part, self.node)
                 except ZeroDivisionError:
                     raise RuntimeASTError('division by 0', other.node)
         elif other.type_mark == 'r':
             if operation == '*':
                 new_real_part = self.real_part * other.number
                 new_imaginary_part = self.imaginary_part * other.number
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '^':
                 if other.is_real_number:
                     raise RuntimeASTError('not a whole degree', other.node)
@@ -88,19 +104,20 @@ class ComplexNumberObject(AbstractObject):
                         result = result.real_operation(multiplier, '*', self.node)
                         degree -= 1
                     return result
+
             elif operation == '/':
                 if other.number == 0:
                     raise RuntimeASTError('division by 0', other.node)
                 new_real_part = self.real_part / other.number
                 new_imaginary_part = self.imaginary_part / other.number
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '+':
                 new_real_part = self.real_part + other.number
                 new_imaginary_part = self.imaginary_part
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
             elif operation == '-':
                 new_real_part = self.real_part - other.number
                 new_imaginary_part = self.imaginary_part
-                return ComplexNumberObject(self.node, new_real_part, new_imaginary_part)
+                return self.create(new_real_part, new_imaginary_part, self.node)
 
         raise RuntimeASTError(f'the "{operation}" operation between {self.type_representation()} and {other.type_representation()} is not defined', operation_node)
