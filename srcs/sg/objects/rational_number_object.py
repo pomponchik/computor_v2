@@ -17,7 +17,7 @@ class RationalNumberObject(AbstractObject):
         number = float(source) if '.' in source else int(source)
         return cls(number, node)
 
-    def representation(self):
+    def representation(self, context):
         return f'{self.number}'
 
     def type_representation(self):

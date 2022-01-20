@@ -45,7 +45,8 @@ def create_node(node, parent_node):
         return MatrixGraphNode(node, create_node)
     elif isinstance(node, ASTFunctionCallNode):
         if isinstance(parent_node, ASTBinaryOperationNode) and parent_node.tokens[1].source == '=':
-            return FunctionDefinitionGraphNode(node, create_node)
+            if parent_node.tokens[0] is node:
+                return FunctionDefinitionGraphNode(node, create_node)
         return FunctionCallGraphNode(node, create_node)
     elif isinstance(node, ASTBinaryOperationNode):
         return BinaryOperationGraphNode(node, create_node)

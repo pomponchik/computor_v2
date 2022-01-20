@@ -9,11 +9,14 @@ class AbstractObject:
     def create_from_node(cls, node):
         raise NotImplementedError('operation not defined')
 
-    def representation(self):
+    def representation(self, context):
         raise NotImplementedError('operation not defined')
 
     def type_representation(self):
         raise NotImplementedError('operation not defined')
+
+    def one_string_representation(self, context):
+        return self.representation(context)
 
     def operation(self, other, operation, operation_node):
         if operation in ('*', '+', '**'):

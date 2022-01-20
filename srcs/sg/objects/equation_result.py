@@ -13,7 +13,7 @@ class EquationResultObject(AbstractObject):
     def create_from_node(cls, node):
         raise NotImplementedError('operation not defined')
 
-    def representation(self):
+    def representation(self, context):
         raise NotImplementedError('operation not defined')
 
     def type_representation(self):

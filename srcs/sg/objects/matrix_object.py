@@ -102,13 +102,13 @@ class MatrixObject(AbstractObject):
 
         return result
 
-    def representation(self):
+    def representation(self, context):
         strings = []
 
         for vector in self.vectors:
             string = []
             for number in vector:
-                string.append(f' {number.representation()} ')
+                string.append(f' {number.representation(context)} ')
             string = ','.join(string)
             string = f'[{string}]'
             strings.append(string)
@@ -118,6 +118,13 @@ class MatrixObject(AbstractObject):
 
     def type_representation(self):
         return 'matrix'
+
+    def one_string_representation(self, context):
+        result = self.representation(context)
+        result = result.split('\n')
+        result = ' ; '.join(result)
+        result = f'[{result}]'
+        return result
 
     def real_operation(self, other, operation, operation_node):
         if other.type_mark == self.type_mark:

@@ -47,7 +47,7 @@ class ComplexNumberObject(AbstractObject):
         index_real, index_imaginary = (0, 1) if 'i' in splitted[1] else (1, 0)
         return splitted[index_real], splitted[index_imaginary], -1 if is_minus else 1
 
-    def representation(self):
+    def representation(self, context):
         if self.real_part:
             return f'{self.real_part} + {self.imaginary_part}i'
         return f'{self.imaginary_part}i'

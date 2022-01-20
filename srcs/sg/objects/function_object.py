@@ -63,8 +63,8 @@ class FunctionObject(AbstractObject):
             raise RuntimeASTError('the names of the function and its argument are the same', node)
         return cls(node, name, argument_name, body)
 
-    def representation(self):
-        return self.body.clean_repr()
+    def representation(self, context):
+        return self.body.clean_repr(context)
 
     def type_representation(self):
         return 'function'
