@@ -19,5 +19,5 @@ class EquationResultObject(AbstractObject):
     def type_representation(self):
         return 'equation result'
 
-    def operation(self, other, operation, operation_node):
-        raise NotImplementedError('operation not defined')
+    def real_operation(self, other, operation, operation_node):
+        raise RuntimeASTError(f'the "{operation}" operation between {self.type_representation()} and {other.type_representation()} is not defined', operation_node)

@@ -86,7 +86,11 @@ class AbstractSyntaxTree:
         return node
 
     def merge_functions_nodes(self, nodes):
-        if not nodes or len(nodes) == 1:
+        if not nodes:
+            return nodes
+        if len(nodes) == 1:
+            if isinstance(nodes[0], AbstractBrancheNode):
+                nodes[0].tokens = self.merge_functions_nodes(nodes[0].tokens)
             return nodes
 
         result = []
@@ -105,6 +109,13 @@ class AbstractSyntaxTree:
 
             previous_node = node
             index += 1
+
+        for node in result:
+            if isinstance(node, AbstractBrancheNode):
+                if not isinstance(node, FunctionCallNode):
+                    node.tokens = self.merge_functions_nodes(node.tokens)
+                else:
+                    node.tokens[1].tokens = self.merge_functions_nodes(node.tokens[1].tokens)
 
         return result
 

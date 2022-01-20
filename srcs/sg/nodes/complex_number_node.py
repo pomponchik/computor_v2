@@ -7,7 +7,7 @@ from srcs.errors import RuntimeASTError
 
 class ComplexNumberGraphNode(AbstractGraphNode):
     def calculate(self, context):
-        return
+        return ComplexNumberObject.create_from_node(self)
 
     def fill_data(self, ast_node, creator):
         pass

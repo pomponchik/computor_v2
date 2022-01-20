@@ -11,22 +11,28 @@ class UnionContext:
         self.function_object = function_object
 
     def __getitem__(self, key):
-        if key == self.function_name:
+        key = self.convert_key(key)
+        if key == self.convert_key(self.function_name):
             raise RuntimeASTError('recursion detected', self.function_object)
         if key in self.local_context:
             return self.local_context[key]
         return self.global_context[key]
 
     def __setitem__(self, key, value):
-        if key == self.function_name:
+        key = self.convert_key(key)
+        if key == self.convert_key(self.function_name):
             raise RuntimeASTError('function name overload', self.function_object)
         if key in self.local_context:
             raise RuntimeASTError('overloading a variable from the local context of a function', self.function_object)
         self.global_context[key] = value
 
     def get(self, key, default):
+        key = self.convert_key(key)
         result = self.local_context.get(key, None)
         return result if result is not None else self.global_context.get(key, None)
+
+    def convert_key(self, key):
+        return key.lower()
 
 class FunctionObject(AbstractObject):
     type_mark = 'm'
@@ -62,6 +68,3 @@ class FunctionObject(AbstractObject):
 
     def type_representation(self):
         return 'function'
-
-    def operation(self, other, operation, operation_node):
-        raise NotImplementedError('operation not defined')

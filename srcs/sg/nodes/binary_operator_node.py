@@ -3,8 +3,6 @@ from srcs.sg.nodes.name_definition_node import NameDefinitionGraphNode
 from srcs.sg.nodes.function_call_node import FunctionCallGraphNode
 from srcs.sg.nodes.function_definition_node import FunctionDefinitionGraphNode
 
-
-
 from srcs.errors import RuntimeASTError
 
 
