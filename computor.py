@@ -17,7 +17,6 @@ def main():
         tokens = Parser(lexemes).tokenize()
         ast = AbstractSyntaxTree(tokens)
         semantic_graph = SemanticGraph(ast)
-        print(semantic_graph)
         final_object = Executor(semantic_graph, context).execute()
         return final_object.representation(context)
 

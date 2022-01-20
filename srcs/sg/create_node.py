@@ -29,6 +29,8 @@ def create_node(node, parent_node):
     elif isinstance(node, ASTQuestionNode):
         if len(node.tokens) != 1:
             raise ASTError('ambiguous question body', node)
+        if isinstance(node.tokens[0], ASTBinaryOperationNode) and node.tokens[0].tokens[1].source == '=':
+            return EquationGraphNode(node.tokens[0], create_node)
         return create_node(node.tokens[0], node)
     elif isinstance(node, ASTComplexNumberNode):
         return ComplexNumberGraphNode(node, create_node)

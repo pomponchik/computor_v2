@@ -5,6 +5,10 @@ class InternalError(ValueError):
     def __str__(self):
         return f'Error: {self.message}.'
 
+class EquationError(InternalError):
+    def __str__(self):
+        return f'Equation Error: {self.message}.'
+
 class InternalLexicalError(InternalError):
     def __init__(self, message, lexeme):
         self.message = message
