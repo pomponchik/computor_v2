@@ -8,24 +8,19 @@ from srcs.errors import RuntimeASTError
 
 class BinaryOperationGraphNode(AbstractGraphNode):
     def calculate(self, context):
-        print('BEFORE @')
         if self.sign == '=':
             if isinstance(self.left_operand, NameDefinitionGraphNode):
                 result = self.right_operand.calculate(context)
                 context[self.ast_node.tokens[0].tokens[0].source] = result
                 return result
             elif isinstance(self.left_operand, FunctionDefinitionGraphNode):
-                print('BEFORE')
                 result = self.left_operand.calculate(context, self.right_operand.ast_node)
                 context[result.name] = result
-                print('AFTER')
                 return result
             else:
-                print('LEFT:', self.left_operand)
                 raise RuntimeASTError('to the left of the assignment operation should be the name', self)
 
         else:
-            print('ELSE')
             left = self.left_operand.calculate(context)
             right = self.right_operand.calculate(context)
 
